@@ -1,4 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from .models import Profile, Follow
+
 
 def register(request):
     if request.method == 'POST':
@@ -9,3 +13,10 @@ def register(request):
     else:
         form = UserCreationForm()
     return render(request, 'users/registration.html', {'form': form})
+
+@login_required
+def profile_view(request, username):
+    user = get_object_or_404(User, username=username)
+    profile = get_object_or_404(Profile, user=user)
+    is_following = Follow.objects.filter(follower=request.user, following=user).exists()
+    return render(request, 'users/profile.html', {'profile': profile, 'is_following': is_following})
