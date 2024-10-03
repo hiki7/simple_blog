@@ -20,3 +20,15 @@ def profile_view(request, username):
     profile = get_object_or_404(Profile, user=user)
     is_following = Follow.objects.filter(follower=request.user, following=user).exists()
     return render(request, 'users/profile.html', {'profile': profile, 'is_following': is_following})
+
+@login_required
+def profile_edit(request):
+    profile = get_object_or_404(Profile, user=request.user)
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect('profile_view', username=request.user.username)
+    else:
+        form = ProfileForm(instance=profile)
+    return render(request, 'users/profile_edit.html', {'form': form})
