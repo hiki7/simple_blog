@@ -32,3 +32,10 @@ def profile_edit(request):
     else:
         form = ProfileForm(instance=profile)
     return render(request, 'users/profile_edit.html', {'form': form})
+
+@login_required
+def follow_user(request, username):
+    user = get_object_or_404(User, username=username)
+    if not Follow.objects.filter(follower=request.user, following=user).exists():
+        Follow.objects.create(follower=request.user, following=user)
+    return redirect('profile_view', username=username)
