@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from .models import Profile, Follow
@@ -38,4 +38,10 @@ def follow_user(request, username):
     user = get_object_or_404(User, username=username)
     if not Follow.objects.filter(follower=request.user, following=user).exists():
         Follow.objects.create(follower=request.user, following=user)
+    return redirect('profile_view', username=username)
+
+@login_required
+def unfollow_user(request, username):
+    user = get_object_or_404(User, username=username)
+    Follow.objects.filter(follower=request.user, following=user).delete()
     return redirect('profile_view', username=username)
