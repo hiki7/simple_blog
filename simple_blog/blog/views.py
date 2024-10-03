@@ -58,3 +58,11 @@ def post_edit(request, pk):
     else:
         form = PostForm()
     return render(request, 'blog/post_form.html', {'form': form})
+
+@login_required
+def post_delete(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    if request.method == 'POST':
+        post.delete()
+        return redirect('post_list')
+    return render(request, 'blog/post_confirm_delete.html', {'post': post})
