@@ -1,24 +1,34 @@
 {% extends "base.html" %}
 {% block content %}
   <h1>{{ profile.user.username }}'s Profile</h1>
-  <img src="{{ profile.profile_picture.url }}" alt="Profile Picture" height="150px" width="150px">
-  <p>{{ profile.bio }}</p>
 
-  {% if user != profile.user %}
-    {% if is_following %}
-      <form method="POST" action="{% url 'unfollow_user' profile.user.username %}">
-        {% csrf_token %}
-        <button type="submit">Unfollow</button>
-      </form>
-    {% else %}
-      <form method="POST" action="{% url 'follow_user' profile.user.username %}">
-        {% csrf_token %}
-        <button type="submit">Follow</button>
-      </form>
-    {% endif %}
+  <!-- Profile picture display -->
+  {% if profile.profile_picture %}
+    <img src="{{ profile.profile_picture.url }}" alt="Profile Picture" height="150px" width="150px">
+  {% else %}
+      {% load static %}
+    <img src="{% static 'images/default.jpg' %}" alt="Default Profile Picture" height="150px" width="150px">
   {% endif %}
 
-  {% if user == profile.user %}
+  <p>{{ profile.bio }}</p>
+
+  <!-- Edit profile link (only for the owner) -->
+  {% if user == profile_user %}
     <a href="{% url 'profile_edit' %}">Edit Profile</a>
+  {% endif %}
+
+  <!-- Follow/Unfollow logic -->
+  {% if user != profile_user %}
+    {% if user in profile_user.following.all %}
+        <form method="POST" action="{% url 'unfollow_user' profile_user.id %}">
+            {% csrf_token %}
+            <button type="submit">Unfollow</button>
+        </form>
+    {% else %}
+        <form method="POST" action="{% url 'follow_user' profile_user.id %}">
+            {% csrf_token %}
+            <button type="submit">Follow</button>
+        </form>
+    {% endif %}
   {% endif %}
 {% endblock %}

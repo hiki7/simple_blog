@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404, redirect
 
@@ -16,7 +17,8 @@ def post_list(request):
     paginator = Paginator(posts, 5)
     page_number = request.GET.get('page')
     posts = paginator.get_page(page_number)
-    return render(request, 'blog/post_list.html', {'posts': posts, 'query': query})
+    users = User.objects.all()
+    return render(request, 'blog/post_list.html', {'posts': posts, 'query': query, 'users': users})
 
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
@@ -57,13 +59,18 @@ def post_edit(request, pk):
             form.save()
             return redirect('post_detail', pk=post.pk)
     else:
-        form = PostForm()
+        form = PostForm(instance=post)
     return render(request, 'blog/post_form.html', {'form': form})
 
 @login_required
 def post_delete(request, pk):
     post = get_object_or_404(Post, pk=pk)
+    if request.user != post.author:
+        return redirect('post_detail', pk=post.pk)
+
     if request.method == 'POST':
+        print("POST request received, deleting post.")
         post.delete()
         return redirect('post_list')
+    print("Rendering delete confirmation template.")
     return render(request, 'blog/post_confirm_delete.html', {'post': post})

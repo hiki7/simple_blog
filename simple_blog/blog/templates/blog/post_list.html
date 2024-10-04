@@ -2,15 +2,29 @@
 {% block content %}
   <h1>Blog Posts</h1>
 
+  {% if user.is_authenticated %}
+    <h2>Create a New Post</h2>
+    <form method="POST" action="{% url 'post_create' %}">
+      {% csrf_token %}
+      <input type="text" name="title" placeholder="Post Title" required>
+      <textarea name="content" placeholder="Post Content" required></textarea>
+      <button type="submit">Create Post</button>
+    </form>
+  {% else %}
+    <p>You must be logged in to create a post.</p>
+  {% endif %}
+
   <form method="GET" action="">
     <input type="text" name="q" placeholder="Search..." value="{{ query }}">
     <button type="submit">Search</button>
   </form>
 
-  <ul>
+   <ul>
     {% for post in posts %}
       <li>
-        <a href="{% url 'post_detail' post.pk %}">{{ post.title }}</a> by {{ post.author }} on {{ post.created_at }}
+        <a href="{% url 'post_detail' post.pk %}">{{ post.title }}</a> by 
+        <a href="{% url 'profile_view' post.author.id %}">{{ post.author.username }}</a> 
+        on {{ post.created_at }}
       </li>
     {% empty %}
       <p>No posts available.</p>
