@@ -32,10 +32,14 @@ def profile_view(request, id):
         return render(request, 'users/profile_not_found.html')  # Render a template showing profile not found
 
     is_following = Follow.objects.filter(follower=request.user, following=user).exists()
+    follower_count = Follow.objects.filter(following=user).count()
+    following_count = Follow.objects.filter(follower=user).count()
     return render(request, 'users/profile.html', {
         'profile': profile,
         'is_following': is_following,
-        'profile_user': user  # Add this line
+        'profile_user': user,
+        'follower_count': follower_count,
+        'following_count': following_count,
     })
 
 
