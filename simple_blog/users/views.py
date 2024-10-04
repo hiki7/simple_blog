@@ -20,7 +20,7 @@ def register(request):
             return redirect('login')
     else:
         form = UserCreationForm()
-    return render(request, 'users/registration.html', {'form': form})
+    return render(request, 'registration/registration.html', {'form': form})
 
 
 @login_required
@@ -29,7 +29,7 @@ def profile_view(request, id):
     profile = Profile.objects.filter(user=user).first()
 
     if not profile:
-        return render(request, 'users/profile_not_found.html')  # Render a template showing profile not found
+        return render(request, 'users/profile_not_found.html')
 
     is_following = Follow.objects.filter(follower=request.user, following=user).exists()
     follower_count = Follow.objects.filter(following=user).count()
@@ -50,7 +50,7 @@ def profile_edit(request):
         form = ProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             form.save()
-            return redirect('profile_view', id=request.user.id)  # Redirect by 'id'
+            return redirect('profile_view', id=request.user.id)
     else:
         form = ProfileForm(instance=profile)
     return render(request, 'users/profile_edit.html', {'form': form})

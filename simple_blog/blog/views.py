@@ -18,7 +18,11 @@ def post_list(request):
     page_number = request.GET.get('page')
     posts = paginator.get_page(page_number)
     users = User.objects.all()
-    return render(request, 'blog/post_list.html', {'posts': posts, 'query': query, 'users': users})
+    return render(request, 'blog/post_list.html',{
+        'posts': posts,
+        'query': query,
+        'users': users
+    })
 
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
@@ -34,8 +38,11 @@ def post_detail(request, pk):
             return redirect('post_detail', pk=post.pk)
     else:
         comment_form = CommentForm()
-    return render(request, 'blog/post_detail.html', {'post': post,
-                                                     'comments': comments,'comment_form': comment_form})
+    return render(request, 'blog/post_detail.html', {
+        'post': post,
+        'comments': comments,
+        'comment_form': comment_form
+    })
 
 @login_required
 def post_create(request):
@@ -69,8 +76,6 @@ def post_delete(request, pk):
         return redirect('post_detail', pk=post.pk)
 
     if request.method == 'POST':
-        print("POST request received, deleting post.")
         post.delete()
         return redirect('post_list')
-    print("Rendering delete confirmation template.")
     return render(request, 'blog/post_confirm_delete.html', {'post': post})
