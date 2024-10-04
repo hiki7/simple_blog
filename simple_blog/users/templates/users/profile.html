@@ -12,6 +12,9 @@
 
   <p>{{ profile.bio }}</p>
 
+    <!-- Followers and Following counts -->
+    <p>{{ follower_count }} Followers | {{ following_count }} Following</p>
+
   <!-- Edit profile link (only for the owner) -->
   {% if user == profile_user %}
     <a href="{% url 'profile_edit' %}">Edit Profile</a>
