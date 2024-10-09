@@ -151,5 +151,5 @@ dmypy.json
 # Docs libre locks
 docs/.~lock*
 .DS_Store
-media/
+#media/
 .gitlab-ci.yml
